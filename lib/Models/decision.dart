@@ -1,14 +1,15 @@
 class Decision {
   final String titulo;
   late String descricao;
-  late double valor; //CUSTO, ISTO É O CUSTO, este é o denominador
+  late double valor; //CUSTO! ISTO É O CUSTO, este é o denominador
   final double tempoDeImpactoPositivo;
   final double tempoDeImplementacao;
   final int pesoEmocional;
   String tempo; // dias, meses, anos
-  late double valorCalculado; //ESTE É O RESULTADO DO CALCULO
+  double valorCalculado = -1; //ESTE É O RESULTADO DO CALCULO
 
   Decision({
+
     required this.titulo,
     required this.valor,
     required this.tempoDeImplementacao,

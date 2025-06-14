@@ -1,4 +1,4 @@
-// pain.dart
+import 'package:decisionmaker/pages/historico.dart';
 import 'package:flutter/material.dart';
 import 'controllers/tutorial_provider.dart';
 import 'package:provider/provider.dart';
@@ -8,20 +8,20 @@ import '../screens/tutorial_basico.dart';
 import '../screens/login_page.dart';
 import 'widgets/decision_editor.dart';
 
-// Mantenha as classes Paginas, TelaPrincipal, etc. como estão...
+
 class Paginas extends StatelessWidget {
   Paginas({super.key});
 
   final List<Widget> _pages = [
     TelaPrincipal(),
-    //TutorialBasicoPage(),
+    TelaEdicao(),
     //TutorialPremiumPage(),
   ];
 
   final List<String> titulos = [
     "Decision Maker",
+    "Editar Decisão",
     "Tutorial Básico",
-    //TutorialPremiumPage(),
   ];
 
   @override
@@ -86,14 +86,15 @@ class Paginas extends StatelessWidget {
             Divider(height: 1, thickness: 1, color: Colors.black),
 
             ListTile(
-              leading: Icon(Icons.book),
-              title: Text("Tutorial Básico"),
-              selected: controller.selectedIndex == 3,
-              onTap:
-                  () =>
-                  Provider.of<DecisionController>(
-                    contexto1,
-                  ).basicoTutorial(contexto1),
+              leading: const Icon(Icons.history),
+              title: const Text('Histórico'),
+              onTap: () {
+                Navigator.pop(contexto1); // Fecha o drawer
+                Navigator.push(
+                  contexto1,
+                  MaterialPageRoute(builder: (context) => const HistoricoPage()),
+                );
+              },
             ),
             ListTile(
               leading: Icon(Icons.star),
@@ -211,18 +212,14 @@ class Paginas extends StatelessWidget {
   }
 }
 
-class Teste extends StatelessWidget {
+class TelaEdicao extends StatelessWidget {
 
-  Teste({super.key});
+  TelaEdicao({super.key});
 
   @override
   Widget build(BuildContext contexto1){
     final controller = contexto1.watch<DecisionController>();
-    return Scaffold(
-      body: Center(
-        child: Text("Teste"),
-      ),
-    );
+    return DecisionEditor();
   }
 }
 
@@ -231,46 +228,20 @@ class TelaPrincipal extends StatelessWidget {
 
   Widget build(BuildContext contexto1) {
     final controller = contexto1.watch<DecisionController>();
+    return DecisionEditor();
+  }
+}
+
+class PaginaUsuario extends StatelessWidget {
+  const PaginaUsuario({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-     /* appBar: AppBar(
-        actions: [
-          Consumer<DecisionController>(
-            builder: (context, controller, child) {
-              return GestureDetector(
-                onTap: () {
-                  controller.isUserPremium()
-                      ? Navigator.pushNamed(context, '/paginaUsuario')
-                      : Navigator.pushNamed(context, '/Login');
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child:
-                      controller.isUserPremium()
-                          ? CircleAvatar(
-                        radius: 12,
-                        backgroundImage: controller.userImage,
-                        child: controller.userImage == null
-                            ? Icon(Icons.person, size: 16)
-                            : null,
-                      )
-                          : Icon(Icons.account_circle_outlined),
-                ),
-              );
-            },
-          ),
-        ],
-
-        title: Consumer<DecisionController>(
-          builder: (context, controller, child) {
-            return Text(controller.titulo);
-          },
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.deepPurple[100],
-      ),
-
-*/    body: DecisionEditor(),
-
+      appBar: AppBar(title: const Text('Perfil de Usuário')),
+      body: const Center(child: Text('Por vir :)')),
     );
   }
 }
+
+

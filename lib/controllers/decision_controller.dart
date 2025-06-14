@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../Models/decisao_final.dart';
 import '../Models/decision.dart';
+import '../services/decision_service.dart';
 //import '../Models/UserProvider.dart'; ///precisa de usuário, ma
 
 class DecisionController extends ChangeNotifier {
@@ -12,12 +15,16 @@ class DecisionController extends ChangeNotifier {
   late double _valor;
   late int _tempo;
   late String descricao;
+  final DecisionService _decisionService = DecisionService();
+  String? _editingDecisionId;
 
   bool _showingTutorial = false;
   int _currentTutorialStep = 0;
 
   bool get showingTutorial => _showingTutorial;
   int get currentTutorialStep => _currentTutorialStep;
+  bool get isEditing => _editingDecisionId != null;
+  String? get editingDecisionId => _editingDecisionId;
 
   String _termoBusca = '';
 
@@ -48,6 +55,7 @@ class DecisionController extends ChangeNotifier {
   //TextEditingController descricaoController = TextEditingController();
   TextEditingController searchController = TextEditingController();
   String get termoBusca => _termoBusca;
+
 
   DecisionController() {
     // Quando a unidade global muda, atualiza todas as decisions e...
@@ -99,8 +107,7 @@ class DecisionController extends ChangeNotifier {
     if (user?.photoURL != null) {
       return NetworkImage(user!.photoURL!);
     }
-
-
+    return null;
   }
 
 
@@ -146,6 +153,7 @@ class DecisionController extends ChangeNotifier {
 
   void adicionarDecision(Decision decisao) {
     decisao.tempo = unidadeTempoGlobal.value; // Sincroniza com a unidade global
+    decisao.valorCalculado = calcularValorFinal(decisao);
     _decisoes.add(decisao);
     notifyListeners();
   }
@@ -209,9 +217,6 @@ class DecisionController extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
-
   void fecharTutorial() {
     _showingTutorial = false;
     notifyListeners();
@@ -227,8 +232,9 @@ class DecisionController extends ChangeNotifier {
 
   double calcularValorFinal(Decision decisao) {
     final fator = fatoresConversao[unidadeTempoGlobal.value] ?? 1;
+    final valor = decisao.valor == 0 ? 1 : decisao.valor;
     return ((decisao.tempoDeImpactoPositivo - decisao.tempoDeImplementacao) *
-        decisao.pesoEmocional / decisao.valor) * fator;
+        decisao.pesoEmocional / valor) * fator;
   }
 
   /// metodos para calcular decisioes e escolher a melhor decisao
@@ -245,5 +251,56 @@ class DecisionController extends ChangeNotifier {
   Decision? get melhorDecision {
     if (_decisoes.isEmpty) return null;
     return compararDecisoes().first;
+  }
+
+  Future<void> salvarDecisaoFinal() async {
+    if (Usuario == null || _decisoes.isEmpty) return;
+
+    final decisaofinal = DecisaoFinal(
+      id: _editingDecisionId ?? FirebaseFirestore.instance.collection('finalDecisions').doc().id,
+      userId: Usuario!.uid,
+      nome: _titulo,
+      data: DateTime.now(),
+      decisoes: _decisoes,
+    );
+
+    await _decisionService.saveFinalDecision(decisaofinal);
+
+    _resetEditingState();
+  }
+
+  void _resetEditingState() {
+    _decisoes.clear();
+    _titulo = "Nova Decisão";
+    _editingDecisionId = null;
+    notifyListeners();
+  }
+
+  void cancelarEdicao() {
+    _resetEditingState();
+  }
+
+  Stream<List<DecisaoFinal>>? carregarHistorico() {
+    if (Usuario == null) return Stream.value([]);
+    return _decisionService.getFinalDecisions(Usuario!.uid);
+  }
+
+  Future<void> deleteFinalDecision(String decisionId) async {
+    if (Usuario == null) return;
+    await _decisionService.deleteFinalDecision(Usuario!.uid, decisionId);
+    notifyListeners();
+  }
+
+  Future<void> editarDecisaoFinal(String decisionId) async {
+    if (Usuario == null) return;
+
+    _editingDecisionId = decisionId;
+    final decisaoFinal = await _decisionService.getFinalDecision(Usuario!.uid, decisionId);
+
+    if (decisaoFinal != null) {
+      _titulo = decisaoFinal.nome;
+      _decisoes = List<Decision>.from(decisaoFinal.decisoes);
+      notifyListeners();
+    }
   }
 }

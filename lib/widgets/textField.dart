@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class LabeledTextField extends StatelessWidget {
   final String label;
   final String hintText;
-  TextEditingController controller;
+  final TextEditingController controller;
 
-  LabeledTextField({
+  const LabeledTextField({
     required this.label,
     required this.hintText,
     required this.controller,
@@ -45,7 +45,7 @@ class LabeledTextField extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(left: 13.0, bottom: 2, top: 12),
                             child: Container(
-                              child: Flexible(
+                              child: FittedBox(
                                 child: Text(
                                   label,
                                   softWrap: true,
@@ -69,12 +69,14 @@ class LabeledTextField extends StatelessWidget {
                     controller: controller,
                     decoration: InputDecoration(
 
-                      hint: Flexible(
-                        fit: FlexFit.tight,
-                          child: Text(hintText, style: TextStyle(
-                        fontSize: 22,
-                        color: Colors.black,
-                      ),)),
+                      hint: Row(
+                        children: [
+                          Text(hintText, style: TextStyle(
+                            fontSize: 22,
+                            color: Colors.black,
+                          ),),
+                        ],
+                      ),
                       isDense: true,
                       border: InputBorder.none,
                       /*hintText: hintText,
