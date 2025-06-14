@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "359779649835",
+    "project_id": "decision-maker-aa38b",
+    "storage_bucket": "decision-maker-aa38b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359779649835:android:31d32b7fdd22b05a5a9d6e",
+        "android_client_info": {
+          "package_name": "com.ryuthe3rd.decision_maker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsNzodk7d4supN9I4pslafM1bHxpKWih8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
