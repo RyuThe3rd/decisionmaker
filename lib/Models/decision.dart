@@ -6,10 +6,10 @@ class Decision {
   final double tempoDeImplementacao;
   final int pesoEmocional;
   String tempo; // dias, meses, anos
-  double valorCalculado = -1; //ESTE É O RESULTADO DO CALCULO
+  double valorCalculado; //ESTE É O RESULTADO DO CALCULO
 
   Decision({
-
+    this.valorCalculado = -1,
     required this.titulo,
     required this.valor,
     required this.tempoDeImplementacao,
@@ -28,11 +28,13 @@ class Decision {
       'implementationTime': tempoDeImplementacao,
       'emotionalWeight': pesoEmocional,
       'timeUnit': tempo,
+      'finalDecisionValue': valorCalculado,
     };
   }
 
   factory Decision.fromMap(Map<String, dynamic> map) {
     return Decision(
+      valorCalculado: (map['finalDecisionValue'] ?? -1).toDouble(),
       titulo: map['title'] ?? '',
       valor: (map['value'] ?? 0).toDouble(),
       tempoDeImpactoPositivo: (map['impactTime'] ?? 0).toDouble(),

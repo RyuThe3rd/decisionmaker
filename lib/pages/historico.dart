@@ -49,7 +49,6 @@ class HistoricoPage extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {
-
                           controller.editarDecisaoFinal(decisao.id);
                           Navigator.pop(context);
                           controller.setIndex(1);

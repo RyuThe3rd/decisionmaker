@@ -7,6 +7,7 @@ import '../services/decision_service.dart';
 //import '../Models/UserProvider.dart'; ///precisa de usuário, ma
 
 class DecisionController extends ChangeNotifier {
+  static final DecisionController _instance = DecisionController._internal();
   String _titulo = "Nova Decisão"; //titulo Da decisão final
   String _tituloOpcao = "Opção nr 1"; //titulo da Opção
   double _impacto = 1; //peso emocional
@@ -17,6 +18,13 @@ class DecisionController extends ChangeNotifier {
   late String descricao;
   final DecisionService _decisionService = DecisionService();
   String? _editingDecisionId;
+
+  void setTitulo(String novoTitulo) {
+    _titulo = novoTitulo;
+    tituloDecisaoFinal.text = novoTitulo; // Atualiza o TextEditingController
+    notifyListeners(); // Importante para widgets ouvirem mudanças
+  }
+
 
   bool _showingTutorial = false;
   int _currentTutorialStep = 0;
@@ -35,9 +43,25 @@ class DecisionController extends ChangeNotifier {
     'anos': 365
   };
 
+  void _atualizarTodasDecisions() {
+    for (var decision in _decisoes) {
+      decision.tempo = unidadeTempoGlobal.value;
+      decision.valorCalculado = calcularValorFinal(decision);
+    }
+  }
+
+  DecisionController._internal() {
+    unidadeTempoGlobal.addListener(_atualizarTodasDecisions);
+  }
+
+  static DecisionController get instance => _instance;
+
   final ValueNotifier<String> unidadeTempoGlobal = ValueNotifier('dias');
+
   TextEditingController pesoController = TextEditingController(text: "1"); // 1 à 10
   TextEditingController tituloOpcaoCtrl = TextEditingController();
+
+  TextEditingController tituloDecisaoFinal = TextEditingController();
 
   TextEditingController tempoImpplementacaoCtrl = TextEditingController();
 
@@ -55,13 +79,6 @@ class DecisionController extends ChangeNotifier {
   //TextEditingController descricaoController = TextEditingController();
   TextEditingController searchController = TextEditingController();
   String get termoBusca => _termoBusca;
-
-
-  DecisionController() {
-    // Quando a unidade global muda, atualiza todas as decisions e...
-    //o seu valor calculado
-    unidadeTempoGlobal.addListener(_atualizarTodasDecisions);
-  }
 
   dynamic Usuario;
 
@@ -139,12 +156,6 @@ class DecisionController extends ChangeNotifier {
     }
   }
 
-  void _atualizarTodasDecisions() {
-    for (var decision in _decisoes) {
-      decision.tempo = unidadeTempoGlobal.value;
-      decision.valorCalculado = calcularValorFinal(decision);
-    }
-  }
 
   void alterarUnidadeTempoGlobal(String novaUnidade) {
     unidadeTempoGlobal.value = novaUnidade;
@@ -272,6 +283,7 @@ class DecisionController extends ChangeNotifier {
   void _resetEditingState() {
     _decisoes.clear();
     _titulo = "Nova Decisão";
+    tituloDecisaoFinal.text = "";
     _editingDecisionId = null;
     notifyListeners();
   }
@@ -298,9 +310,9 @@ class DecisionController extends ChangeNotifier {
     final decisaoFinal = await _decisionService.getFinalDecision(Usuario!.uid, decisionId);
 
     if (decisaoFinal != null) {
-      _titulo = decisaoFinal.nome;
       _decisoes = List<Decision>.from(decisaoFinal.decisoes);
-      notifyListeners();
+      setTitulo(decisaoFinal.nome);
+      //notifyListeners(); no need for it
     }
   }
 }

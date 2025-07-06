@@ -220,8 +220,9 @@ class DecisionEditor extends StatelessWidget {
                           child: Column(
                             children: [
                               TextField(
+                                controller: controller.tituloDecisaoFinal,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 29),
+                                style: TextStyle(fontSize: 29,  fontWeight: FontWeight.bold),
                                 decoration: const InputDecoration(
                                   contentPadding: EdgeInsets.zero,
                                   border: InputBorder.none,
@@ -675,7 +676,7 @@ class DecisionEditor extends StatelessWidget {
                                             context,
                                             listen: false,
                                           );
-                              
+
                                           ///autenticação dos campos antes de criar uma nova decision
                                           if (controller.tituloOpcaoCtrl.text.isEmpty) {
                                             ScaffoldMessenger.of(context).showSnackBar(
@@ -685,7 +686,7 @@ class DecisionEditor extends StatelessWidget {
                                             );
                                             return;
                                           }
-                              
+
                                           /// criação de uma nova decision/opção
                                           /// preciso conciliar os controllers com os parametros do Decision,
                                           final novaOpcao = Decision(
@@ -704,7 +705,10 @@ class DecisionEditor extends StatelessWidget {
                                             pesoEmocional:
                                             int.tryParse(controller.pesoController.text) ?? 1,
                                           );
-                              
+
+                                          ///adição dessa nova opção na lista de Decisions que está no controller
+                                          novaOpcao.valorCalculado = controller.calcularValorFinal(novaOpcao);
+
                                           ///adição dessa nova opção na lista de Decisions que está no controller
                                           controller.adicionarDecision(novaOpcao);
                                           controller.limparForm();
@@ -714,9 +718,9 @@ class DecisionEditor extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                              
+
                                   SizedBox(width: 40.0),
-                              
+
                                   Expanded(
                                     flex: 5,
                                     child: Container(
@@ -726,48 +730,48 @@ class DecisionEditor extends StatelessWidget {
                                           final decisoes = controller.decisoes;
                                           if (decisoes.isEmpty) return;
                                           final melhor = DecisionCalculator.calcularMelhor(decisoes);
-                              
-                              
-                                           controller.salvarDecisaoFinal();
-                              
-                                            print("Ja");
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                title: Text(controller.isEditing
-                                                    ? "Decisão Atualizada"
-                                                    : "Melhor Opção",
+
+
+                                          controller.salvarDecisaoFinal();
+
+                                          print("Ja");
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: Text(controller.isEditing
+                                                  ? "Decisão Atualizada"
+                                                  : "Melhor Opção",
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold
                                                 ),),
-                              
-                                                content: Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    Column(
-                                                      children: [
-                                                        Text(
-                                                          "${melhor.titulo}",
-                                                        ),
-                                                        Text(
-                                                          "Impacto:${melhor.valorCalculado.toStringAsFixed(2)}",
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () => Navigator.pop(context),
-                                                    child: const Text("Fechar"),
+
+                                              content: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Column(
+                                                    children: [
+                                                      Text(
+                                                        "${melhor.titulo}",
+                                                      ),
+                                                      Text(
+                                                        "Impacto:${melhor.valorCalculado.toStringAsFixed(2)}",
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
-                                            );
-                              
-                                            /*if (controller.isEditing) {
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.pop(context),
+                                                  child: const Text("Fechar"),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+
+                                          /*if (controller.isEditing) {
                                               Navigator.pop(context); // Fecha o editor se estava editando
                                             }*/
                                           ;
@@ -779,7 +783,7 @@ class DecisionEditor extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                              
+
                                 ],
                               ),
                             ),

@@ -16,7 +16,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => DecisionController()),
+        ChangeNotifierProvider(create: (_) => DecisionController.instance),
         ChangeNotifierProvider(create: (_) => TutorialProvider()),
       ],
       child: const DecisionMakerApp(),

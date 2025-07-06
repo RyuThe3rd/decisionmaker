@@ -75,11 +75,15 @@ class Paginas extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.favorite),
               title: Text("Fazer Nova Decisão"),
-              selected: controller.selectedIndex == 2,
+              selected: controller.selectedIndex ==  3,
               onTap: () {
-                Provider.of<DecisionController>(contexto1).premiumTutorial(contexto1);
+                Navigator.pop(contexto1);
+                controller.setIndex(0);
+                Provider.of<DecisionController>(contexto1, listen: false).limparForm();
+                Provider.of<DecisionController>(contexto1, listen: false).cancelarEdicao();
+                // criar alerta no filho do Stack do decison editor com uma notificação de gravar ou n
+                //não gravar
 
-                Navigator.pushReplacementNamed(contexto1, '/');
               },
             ),
 
